@@ -22,27 +22,26 @@ int main (int argc, char * args[])
 
     if(myRank == 0)
     {
-        for(int i = 0; i < argc ; i++)
+        for(int32_t i = 0; i < argc ; i++)
         {
             numbers[i] = atoi(args[i]);
-            result += numbers[i];
         }
-        int *  datablock = malloc(worldsize * maxQueneSize * sizeof(int32_t));
-        int ** quene     = malloc(worldsize * sizeof(int32_t**));
+        int32_t *  datablock = malloc(worldsize * maxQueneSize * sizeof(int32_t));
+        int32_t ** quene     = malloc(worldsize * sizeof(int32_t**));
         memset(datablock,0,worldsize * maxQueneSize * sizeof(int32_t));
         fprintf(stderr,"WorldSize: %4d\n",worldsize);
 
-        for(int i = 0; i < worldsize; i++)
+        for(int32_t i = 0; i < worldsize; i++)
             quene[i] = datablock + (maxQueneSize * i);
         
         printf("Mache gleich groesse Quenes fuer die Welt mittels round robin");
-        for(int i = 0; i < argc; i++)
+        for(int32_t i = 0; i < argc; i++)
             quene[i%worldsize][i/worldsize] = numbers[i];
-        for(int i = 0; i < worldsize; i++)
+        for(int32_t i = 0; i < worldsize; i++)
             MPI_Send(quene[i],maxQueneSize,MPI_INT,i+1,1,MPI_COMM_WORLD);
-        int result = 0;
-        int answer = 0;
-        for(int i = 0; i < worldsize; i++)
+        int32_t result = 0;
+        int32_t answer = 0;
+        for(int32_t i = 0; i < worldsize; i++)
         {
             MPI_Recv(&answer,1,MPI_INT,i+1,2,MPI_COMM_WORLD,NULL);
             result += answer;
@@ -51,10 +50,10 @@ int main (int argc, char * args[])
     }
     else
     {
-        int * buffer = malloc(maxQueneSize * sizeof(int32_t));
+        int32_t * buffer = malloc(maxQueneSize * sizeof(int32_t));
         MPI_Recv(buffer,maxQueneSize,MPI_INT,0,1,MPI_COMM_WORLD,NULL);
-        int result = 0;
-        for(int i = 0; i < maxQueneSize; i++)
+        int32_t result = 0;
+        for(int32_t i = 0; i < maxQueneSize; i++)
             result += buffer[i];
         MPI_Send(&result,1,MPI_INT,0,2,MPI_COMM_WORLD);
     }
